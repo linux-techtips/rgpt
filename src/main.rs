@@ -103,7 +103,7 @@ fn loading_message() -> StoppableHandle<()> {
         let mut stdout = std::io::stdout();
         while !stopped.get() {
             let _ = stdout.flush();
-            print!("\u{1F916} {}{}", clear::CurrentLine, LOADING_MESSAGE[index]);
+            print!("{}{} {}", clear::CurrentLine, std::char::from_u32(0x1F916).unwrap(), LOADING_MESSAGE[index]);
             let _ = stdout.flush();
 
             for c in "...".chars() {
