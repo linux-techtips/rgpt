@@ -1,0 +1,16 @@
+[package]
+name = "rgpt"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+clap = {version="4.1.4", features=["derive"]}
+dirs = "4.0.0"
+rand = "0.8.5"
+reqwest = {version="0.11.14", features=["json", "blocking"]}
+serde = {version="1.0.152", features=["derive"]}
+serde_json = "1.0.93"
+stoppable_thread = "0.2.1"
+termion = "2.0.1"
