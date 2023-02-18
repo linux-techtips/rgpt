@@ -1,10 +1,7 @@
 mod response;
 use response::{Args, ChatResponse, Parser};
 
-use reqwest::{
-    blocking::Client,
-    header::{self, HeaderMap, HeaderValue},
-};
+use reqwest::blocking::Client;
 
 use dirs::home_dir;
 use rand::{self, Rng};
