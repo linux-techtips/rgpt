@@ -5,7 +5,14 @@ use reqwest::blocking::Client;
 
 use dirs::home_dir;
 use rand::{self, Rng};
-use termion::clear;
+
+use termion::{
+    self,
+    clear,
+    event::Key,
+    input::TermRead,
+    raw::IntoRawMode,
+};
 
 use std::{
     fs,
@@ -118,6 +125,39 @@ fn loading_message() -> StoppableHandle<()> {
     })
 }
 
+fn confirm_exec() -> Result<bool, io::Error> {
+    let mut stdout = io::stdout().into_raw_mode()?;
+    let mut stdin = termion::async_stdin().keys();
+    
+    stdout.flush()?;
+    write!(stdout, "Execute command? [Y/N]:  ")?;
+    stdout.flush()?;
+
+    loop {
+        let input = stdin.next();
+        if let Some(Ok(key)) = input {
+            write!(stdout, "{}{}", termion::cursor::Left(1), clear::AfterCursor)?;
+            stdout.flush()?;
+            let res = match key {
+                Key::Char('y') | Key::Char('Y') => true,
+                Key::Char('n') | Key::Char('N') => false,
+                Key::Char(k) => {
+                    write!(stdout, "{}", k)?;
+                    stdout.flush()?;
+                    continue;
+                },
+                _ => { continue; }
+            };
+
+            write!(stdout, "{}", clear::CurrentLine)?;
+            stdout.flush()?;
+            return Ok(res);
+        }
+
+        std::thread::sleep(Duration::from_millis(25));
+    }
+}
+
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let (payload, execute) = Args::parse().serialize();
     let api_key = get_api_key()?;
@@ -130,7 +170,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     animate(&response.choices[0].text, None)?;
 
-    if execute {
+    if execute && confirm_exec()? {
         let mut output = Command::new("bash")
             .arg("-c")
             .arg(&response.choices[0].text)
