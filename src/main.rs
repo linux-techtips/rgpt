@@ -5,6 +5,7 @@ use dirs::home_dir;
 use futures_util::StreamExt;
 use reqwest::Client;
 
+use tokio::io::AsyncWriteExt;
 use termion::{self, clear, cursor, event::Key, input::TermRead, raw::IntoRawMode};
 
 use std::{
@@ -13,8 +14,6 @@ use std::{
     process::Command,
     time::Duration,
 };
-
-use tokio::io::AsyncWriteExt;
 
 type GptError = Box<dyn std::error::Error>;
 
@@ -67,7 +66,7 @@ fn confirm_exec() -> Result<bool, io::Error> {
                     stdout.flush()?;
                     continue;
                 }
-                _ => {
+                _ => { // TODO (Carter) handle common exit keys [Ctrl+C, Ctrl+D]
                     continue;
                 }
             };
@@ -112,9 +111,6 @@ async fn askgpt(payload: &serde_json::Value, auth: String) -> Result<String, Gpt
             Ok(r) => {
                 let text = &r.choices[0].text;
                 chat.push_str(text);
-
-                let text = text.trim_start_matches('\n');
-
                 stdout.write_all(text.as_bytes()).await?;
                 stdout.flush().await?;
             }
