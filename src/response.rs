@@ -2,36 +2,35 @@ pub use clap::Parser;
 use serde_json::json;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize)]
 pub struct Content {
-    pub finish_reason: String,
-    pub index: i32,
-    pub logprobs: Option<serde_json::Value>,
     pub text: String,
+    pub index: isize,
+    pub logprobs: Option<String>,
+    pub finish_reason: Option<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize)]
 pub struct Usage {
-    pub completion_tokens: i32,
-    pub prompt_tokens: i32,
-    pub total_tokens: i32,
+    pub prompt_tokens: isize,
+    pub completion_tokens: isize,
+    pub total_tokens: isize,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize)]
 pub struct ChatResponse {
-    pub choices: Vec<Content>,
-    pub created: i32,
     pub id: String,
-    pub model: String,
     pub object: String,
-    pub usage: Usage
+    pub created: isize,
+    pub choices: Vec<Content>,
+    pub model: String,
 }
 
 #[derive(Parser, Debug)]
 #[command(name="rgpt")]
 #[command(author="linux-techtips")]
 #[command(version="1.0")]
-#[command(about="A simple CLI for OpenAI's GPT-3 API", long_about = None)]
+#[command(about="A simple CLI for OpenAI's various text models", long_about = None)]
 pub struct Args {
     pub prompt: String,
     #[clap(long, default_value = "text-davinci-003")]
@@ -56,6 +55,7 @@ impl Args {
                 "prompt": prompt,
                 "model": self.model,
                 "max_tokens": self.max_tokens,
+                "stream": true,
             }
         ), self.execute)
     }

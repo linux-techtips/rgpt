@@ -8,9 +8,12 @@ edition = "2021"
 [dependencies]
 clap = {version="4.1.4", features=["derive"]}
 dirs = "4.0.0"
+futures-util = "0.3.26"
 rand = "0.8.5"
-reqwest = {version="0.11.14", features=["json", "blocking"]}
+reqwest = {version="0.11.14", features=["json", "stream"]}
+rpassword = "7.2.0"
 serde = {version="1.0.152", features=["derive"]}
 serde_json = "1.0.93"
 stoppable_thread = "0.2.1"
 termion = "2.0.1"
+tokio = {version="1.25.0", features=["full"]}
