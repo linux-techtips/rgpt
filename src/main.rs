@@ -125,7 +125,6 @@ async fn askgpt(payload: &serde_json::Value, auth: String) -> Result<String, Gpt
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // test
     let (payload, execute) = Args::parse().serialize();
     let api_key = get_api_key()?;
 

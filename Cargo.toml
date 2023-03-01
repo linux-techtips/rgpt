@@ -3,6 +3,9 @@ name = "rgpt"
 version = "0.2.0"
 authors = ["itdudetv"]
 edition = "2021"
+description = "A simple and fast shell client for ChatGPT"
+license = "MIT"
+
 
 [dependencies]
 dirs = "4.0.0"
@@ -28,5 +31,9 @@ debug = true
 opt-level = 0
 
 [profile.release]
+lto = "thin"
 debug = false
-opt-level = 3
+opt-level = "s"
+strip = true
+incremental = true
+overflow-checks = false
