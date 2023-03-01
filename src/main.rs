@@ -4,9 +4,8 @@ use response::{Args, ChatResponse, Parser};
 use dirs::home_dir;
 use futures_util::StreamExt;
 use reqwest::Client;
-
-use tokio::io::AsyncWriteExt;
 use termion::{self, clear, cursor, event::Key, input::TermRead, raw::IntoRawMode};
+use tokio::io::AsyncWriteExt;
 
 use std::{
     fs::{self, File},
@@ -66,7 +65,8 @@ fn confirm_exec() -> Result<bool, io::Error> {
                     stdout.flush()?;
                     continue;
                 }
-                _ => { // TODO (Carter) handle common exit keys [Ctrl+C, Ctrl+D]
+                _ => {
+                    // TODO (Carter) handle common exit keys [Ctrl+C, Ctrl+D]
                     continue;
                 }
             };
