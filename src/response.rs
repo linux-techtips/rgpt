@@ -22,8 +22,8 @@ pub struct ChatResponse {
 #[derive(Parser, Debug)]
 #[command(name = "rgpt")]
 #[command(author = "linux-techtips")]
-#[command(version = "1.0")]
-#[command(about="A simple CLI for OpenAI's various text models", long_about = None)]
+#[command(version = "0.2.0")]
+#[command(about="A very fast command-line client for OpenAi's various text models.", long_about = None)]
 pub struct Args {
     pub prompt: String,
     #[clap(long, default_value = "text-davinci-003")]
