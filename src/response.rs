@@ -76,7 +76,8 @@ mod tests {
             max_tokens: 1024,
             shell: false,
             execute: false,
-        }.serialize();
+        }
+        .serialize();
 
         assert_eq!(args, json);
         assert_eq!(execute, false);
