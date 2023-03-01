@@ -59,6 +59,15 @@ Options:
   -V, --version                  Print version
 ```
 
+## Future Plans
+
+- [ ] More options for API
+- [ ] Improved error handling
+- [ ] User-defined prompts
+- [ ] Sharing of prompts
+- [ ] Repl environment (Indev)
+- [ ] Context and chat storage
+
 ## License
 Copyright (c) 2023 MIT License
 
