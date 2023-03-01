@@ -1,11 +1,11 @@
 [package]
 name = "rgpt"
 version = "0.2.0"
-authors = ["itdudetv"]
+authors = ["linuxtechtips"]
 edition = "2021"
 description = "A simple and fast shell client for ChatGPT"
 license = "MIT"
-
+repository = "https://github.com/linuxtechtips/rgpt"
 
 [dependencies]
 dirs = "4.0.0"
