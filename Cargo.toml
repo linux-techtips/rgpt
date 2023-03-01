@@ -1,6 +1,6 @@
 [package]
 name = "rgpt"
-version = "0.2.0"
+version = "0.2.1"
 authors = ["linuxtechtips"]
 edition = "2021"
 description = "A simple and fast shell client for ChatGPT"
