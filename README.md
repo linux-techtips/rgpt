@@ -1,25 +1,66 @@
-### RGPT
-#### A blazingly fart shell client for Chat GPT with API Streaming.
-![Image](https://user-images.githubusercontent.com/32278830/221998116-06dea982-4962-4fd3-8562-05c04c004499.jpg)
+# RGPT
+#### A very fast command-line client for OpenAi's various text models.
 
-# Getting Started
-
-### Prerequisites
-* Cargo
-
-### Installation
+## Installation
+```sh
+$ cargo install rgpt
 ```
-$ cargo TBD
-```
+On your first use, rgpt will prompt you for your api key. You can generate one [here](https://platform.openai.com/account/api-keys)
   
-### Project Setup
-To begin contributing, create a fork of this repository.
+## Documentation
+### Chatting
 
-### Documentation
-* [Ha lol](https://youtu.be/dQw4w9WgXcQ)
+```sh
+$ rgpt "What is your name"
 
-### License
+My name is Sam.
+
+$ rgpt "What is the best programming language"
+
+Rust.
+```
+
+###### *Disclaimer*: Responses to the prompts shown above are modified to correct for industry biases
+
+### Shell Commands
+
+`rgpt` can take a description of a command and turn it into shell code
+
+```sh
+$ rgpt -s "What is the command to install polars for python"
+pip install polars
+
+```
+
+`rgpt` is also capable of executing commands in a bash capable shell environments
+
+```sh
+$ rgpt -se "What is the command to add serde to a rust project"
+cargo add serde
+Execute command? [Y/N]: 
+
+```
+
+### Arguments
+```sh
+A simple CLI for OpenAI's various text models
+
+Usage: rgpt [OPTIONS] <PROMPT>
+
+Arguments:
+  <PROMPT>
+
+Options:
+      --model <MODEL>            [default: text-davinci-003]
+      --max-tokens <MAX_TOKENS>  [default: 1024]
+  -s, --shell
+  -e, --execute
+  -h, --help                     Print help
+  -V, --version                  Print version
+```
+
+## License
 Copyright (c) 2023 MIT License
 
-### Contact
+## Contact
 [Issues](https://github.com/linux-techtips/rgpt/issues)
