@@ -2,14 +2,20 @@ mod response;
 use response::{Args, ChatResponse, Parser};
 
 use dirs::home_dir;
-use futures_util::StreamExt;
+use futures_util::{select, FutureExt, StreamExt};
 use reqwest::Client;
-use termion::{self, clear, cursor, event::Key, input::TermRead, raw::IntoRawMode};
 use tokio::io::AsyncWriteExt;
+
+use crossterm::{
+    cursor,
+    event::{Event, EventStream, KeyCode, KeyModifiers},
+    execute,
+    terminal::{disable_raw_mode, enable_raw_mode, Clear, ClearType},
+};
 
 use std::{
     fs::{self, File},
-    io::{self, BufRead, BufReader, Write},
+    io::{self, stdout, BufRead, BufReader, Write},
     process::Command,
     time::Duration,
 };
@@ -31,9 +37,13 @@ fn get_api_key() -> Result<String, GptError> {
     } else {
         fs::create_dir_all(config_folder)?;
 
-        let key = rpassword::prompt_password(format!("{}Enter your API key: ", cursor::Save))?;
-        print!("{}{}", cursor::Restore, clear::AfterCursor);
-        io::stdout().flush()?;
+        let key =
+            rpassword::prompt_password(format!("{}Enter your API key: ", cursor::SavePosition))?;
+        execute!(
+            stdout(),
+            cursor::RestorePosition,
+            Clear(ClearType::UntilNewLine)
+        )?;
 
         fs::write(config_file, &key)?;
 
@@ -43,41 +53,48 @@ fn get_api_key() -> Result<String, GptError> {
     Ok(key)
 }
 
-fn confirm_exec() -> Result<bool, io::Error> {
-    let mut stdout = io::stdout().into_raw_mode()?;
-    let mut stdin = termion::async_stdin().keys();
+async fn confirm_exec() -> Result<bool, io::Error> {
+    let mut stdin = EventStream::new();
+    let mut stdout = io::stdout();
 
-    stdout.flush()?;
-    print!("{}Execute command? [Y/N]:  ", cursor::Save);
+    print!("{}Execute command? [Y/N]  ", cursor::SavePosition);
     stdout.flush()?;
 
     loop {
-        let input = stdin.next();
-        if let Some(Ok(key)) = input {
-            print!("{}{}", termion::cursor::Left(1), clear::AfterCursor);
-            stdout.flush()?;
-
-            let res = match key {
-                Key::Char('y') | Key::Char('Y') => true,
-                Key::Char('n') | Key::Char('N') => false,
-                Key::Char(k) => {
-                    print!("{k}");
-                    stdout.flush()?;
-                    continue;
+        let mut event = stdin.next().fuse();
+        let res = select! {
+            maybe_event = event => {
+                std::thread::sleep(Duration::from_millis(100));
+                execute!(stdout, cursor::MoveLeft(1), Clear(ClearType::UntilNewLine))?;
+                match maybe_event {
+                    Some(Ok(Event::Key(key))) => {
+                        match (key.code, key.modifiers) {
+                            (KeyCode::Char('c'), KeyModifiers::CONTROL) => std::process::exit(0),
+                            (KeyCode::Char('y'), _) | (KeyCode::Char('Y'), _) => true,
+                            (KeyCode::Char('n'), _) | (KeyCode::Char('N'), _) => false,
+                            (KeyCode::Char(c), _) => {
+                                print!("{c}");
+                                stdout.flush()?;
+                                continue;
+                            }
+                            _ => continue,
+                        }
+                    },
+                    Some(Ok(_)) => continue,
+                    Some(Err(_)) => continue,
+                    _ => false,
                 }
-                _ => {
-                    // TODO (Carter) handle common exit keys [Ctrl+C, Ctrl+D]
-                    continue;
-                }
-            };
+            }
+        };
 
-            print!("{}{}", cursor::Restore, clear::AfterCursor);
-            stdout.flush()?;
+        execute!(
+            stdout,
+            cursor::RestorePosition,
+            Clear(ClearType::UntilNewLine)
+        )?;
+        stdout.flush()?;
 
-            return Ok(res);
-        }
-
-        std::thread::sleep(Duration::from_millis(25));
+        return Ok(res);
     }
 }
 
@@ -124,15 +141,17 @@ async fn askgpt(payload: &serde_json::Value, auth: String) -> Result<String, Gpt
 }
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
+async fn main() -> Result<(), GptError> {
     let (payload, execute) = Args::parse().serialize();
     let api_key = get_api_key()?;
 
     let chat = askgpt(&payload, api_key).await?;
 
-    if execute && confirm_exec()? {
+    enable_raw_mode()?;
+    if execute && confirm_exec().await? {
         Command::new("bash").arg("-c").arg(&chat).spawn()?.wait()?;
     }
+    disable_raw_mode()?;
 
     Ok(())
 }

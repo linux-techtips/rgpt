@@ -6,6 +6,7 @@ edition = "2021"
 description = "A simple and fast shell client for ChatGPT"
 license = "MIT"
 repository = "https://github.com/linux-techtips/rgpt"
+keywords = ["chat", "gpt", "gpt3", "chatgpt", "chatbot", "ai"]
 
 [[bin]]
 name = "rgpt"
@@ -16,22 +17,22 @@ opt-level = 0
 
 [profile.release]
 lto = "thin"
+strip = true
 debug = false
 opt-level = "s"
-strip = true
 incremental = true
 overflow-checks = false
 
 [dependencies]
 dirs = "4.0.0"
 rand = "0.8.5"
-termion = "2.0.1"
 rpassword = "7.2.0"
 serde_json = "1.0.93"
 futures-util = "0.3.26"
 clap = {version="4.1.4", features=["derive"]}
 tokio = {version="1.25.0", features=["full"]}
 serde = {version="1.0.152", features=["derive"]}
+crossterm = {version="0.26.0", features=["event-stream"]}
 reqwest = {version="0.11.14", features=["json", "stream"]}
 
 [build-dependencies]
