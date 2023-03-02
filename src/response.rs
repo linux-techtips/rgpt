@@ -22,7 +22,7 @@ pub struct ChatResponse {
 #[derive(Parser, Debug)]
 #[command(name = "rgpt")]
 #[command(author = "linux-techtips")]
-#[command(version = "0.2.1")]
+#[command(version = "0.3.0")]
 #[command(about="A very fast command-line client for OpenAi's various text models.", long_about = None)]
 pub struct Args {
     pub prompt: String,
