@@ -5,7 +5,7 @@
 ```sh
 $ cargo install rgpt
 ```
-On your first use, rgpt will prompt you for your api key. You can generate one [here](https://platform.openai.com/account/api-keys)
+On your first use, rgpt will prompt you for your api key and write it to ~/.config/rgpt/secret. You can generate one [here](https://platform.openai.com/account/api-keys)
   
 ## Documentation
 ### Chatting
